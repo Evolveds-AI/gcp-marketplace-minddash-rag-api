@@ -4,9 +4,9 @@ steps:
     args:
       - build
       - -t
-      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/rag:$COMMIT_SHA'
+      - '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO/rag:$COMMIT_SHA'
       - -t
-      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/rag:latest'
+      - '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO/rag:latest'
       - .
     id: build
 
@@ -15,7 +15,7 @@ steps:
     args:
       - push
       - '--all-tags'
-      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/rag'
+      - '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO/rag'
     id: push
     waitFor: ['build']
 
@@ -25,8 +25,8 @@ steps:
       - run
       - deploy
       - minddash-rag
-      - '--image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/rag:$COMMIT_SHA'
-      - '--region=${_REGION}'
+      - '--image=$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO/rag:$COMMIT_SHA'
+      - '--region=$_REGION'
       - '--project=$PROJECT_ID'
       - '--service-account=minddash-rag-sa@$PROJECT_ID.iam.gserviceaccount.com'
     id: deploy-service
@@ -39,9 +39,9 @@ steps:
       - -f
       - Dockerfile.ingestion
       - -t
-      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/rag-ingestion:$COMMIT_SHA'
+      - '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO/rag-ingestion:$COMMIT_SHA'
       - -t
-      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/rag-ingestion:latest'
+      - '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO/rag-ingestion:latest'
       - .
     id: build-ingestion
     waitFor: ['push']
@@ -51,7 +51,7 @@ steps:
     args:
       - push
       - '--all-tags'
-      - '${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/rag-ingestion'
+      - '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO/rag-ingestion'
     id: push-ingestion
     waitFor: ['build-ingestion']
 
@@ -62,8 +62,8 @@ steps:
       - -c
       - |
         gcloud run jobs update minddash-rag-ingestion \
-          --image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/rag-ingestion:$COMMIT_SHA \
-          --region=${_REGION} \
+          --image=$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO/rag-ingestion:$COMMIT_SHA \
+          --region=$_REGION \
           --project=$PROJECT_ID 2>/dev/null || \
         echo "Job no encontrado, se creara en el proximo terraform apply"
     id: deploy-job
