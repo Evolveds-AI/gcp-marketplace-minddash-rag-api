@@ -32,42 +32,6 @@ steps:
     id: deploy-service
     waitFor: ['push']
 
-  # 4. Build y push imagen del Job de ingestion (mismo repo, Dockerfile diferente)
-  - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - build
-      - -f
-      - Dockerfile.ingestion
-      - -t
-      - '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO/rag-ingestion:$COMMIT_SHA'
-      - -t
-      - '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO/rag-ingestion:latest'
-      - .
-    id: build-ingestion
-    waitFor: ['push']
-
-  # 5. Push imagen de ingestion
-  - name: 'gcr.io/cloud-builders/docker'
-    args:
-      - push
-      - '--all-tags'
-      - '$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO/rag-ingestion'
-    id: push-ingestion
-    waitFor: ['build-ingestion']
-
-  # 6. Actualizar Cloud Run Job con la nueva imagen
-  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
-    entrypoint: bash
-    args:
-      - -c
-      - |
-        gcloud run jobs update minddash-rag-ingestion \
-          --image=$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO/rag-ingestion:$COMMIT_SHA \
-          --region=$_REGION \
-          --project=$PROJECT_ID 2>/dev/null || \
-        echo "Job no encontrado, se creara en el proximo terraform apply"
-    id: deploy-job
-    waitFor: ['push-ingestion']
 
 substitutions:
   _REGION: us-central1
