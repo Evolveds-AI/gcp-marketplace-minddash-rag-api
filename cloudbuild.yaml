@@ -29,6 +29,7 @@ steps:
       - '--region=$_REGION'
       - '--project=$PROJECT_ID'
       - '--service-account=minddash-rag-sa@$PROJECT_ID.iam.gserviceaccount.com'
+      - '--update-secrets=DB_URL=minddash-db-url-async:latest'
     id: deploy-service
     waitFor: ['push']
 
