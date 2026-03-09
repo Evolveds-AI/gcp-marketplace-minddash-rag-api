@@ -21,14 +21,14 @@ steps:
 
   # 3. Deploy Cloud Run Service (RAG API)
   - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk'
+    entrypoint: bash
     args:
-      - run
-      - deploy
-      - minddash-rag
-      - '--image=$_REGION-docker.pkg.dev/$PROJECT_ID/$_REPO/rag:$COMMIT_SHA'
-      - '--region=$_REGION'
-      - '--project=$PROJECT_ID'
-      - '--service-account=minddash-rag-sa@$PROJECT_ID.iam.gserviceaccount.com'
+      - -c
+      - |
+        gcloud run deploy minddash-rag \
+          --image=${_REGION}-docker.pkg.dev/$PROJECT_ID/${_REPO}/rag:$COMMIT_SHA \
+          --region=${_REGION} --project=$PROJECT_ID \
+          --service-account=minddash-rag-sa@$PROJECT_ID.iam.gserviceaccount.com
     id: deploy-service
     waitFor: ['push']
 
