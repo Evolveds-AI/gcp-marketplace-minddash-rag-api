@@ -1,5 +1,6 @@
 from datetime import datetime
 from langchain_postgres import PGVectorStore
+from langchain_postgres.v2.engine import Column
 
 
 async def ingest_conversation(
@@ -21,6 +22,21 @@ async def ingest_conversation(
         "channel_product_id",
         "created_at",
     ]
+
+    await pg_engine.ainit_vectorstore_table(
+        table_name="rag_conversationsstore",
+        vector_size=768,
+        metadata_columns=[
+            Column("user_query", "TEXT"),
+            Column("bot_response", "TEXT"),
+            Column("id_usuario", "TEXT"),
+            Column("id_session", "TEXT"),
+            Column("product_id", "TEXT"),
+            Column("channel_product_id", "TEXT"),
+            Column("created_at", "TIMESTAMP WITH TIME ZONE"),
+        ],
+        overwrite_existing=False,
+    )
 
     vector_store = await PGVectorStore.create(
         table_name="rag_conversationsstore",
