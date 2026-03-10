@@ -10,6 +10,7 @@ from langchain_google_vertexai import VertexAIEmbeddings
 from langchain_postgres import PGVectorStore
 from langchain_postgres.v2.engine import Column
 from sqlalchemy import text
+from sqlalchemy.exc import ProgrammingError
 from sqlmodel import select
 from sqlmodel.ext.asyncio.session import AsyncSession
 
@@ -67,15 +68,18 @@ ALLOWED_EXTENSIONS = {
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await pg_engine.ainit_vectorstore_table(
-        table_name="rag_vectorstore",
-        vector_size=768,
-        metadata_columns=[
-            Column("uploaded_document_id", "UUID"),
-            Column("product_id", "UUID"),
-        ],
-        overwrite_existing=False,
-    )
+    try:
+        await pg_engine.ainit_vectorstore_table(
+            table_name="rag_vectorstore",
+            vector_size=768,
+            metadata_columns=[
+                Column("uploaded_document_id", "UUID"),
+                Column("product_id", "UUID"),
+            ],
+            overwrite_existing=False,
+        )
+    except ProgrammingError:
+        pass  # table already exists with the correct schema
     app.state.vector_store = await PGVectorStore.create(
         table_name="rag_vectorstore",
         engine=pg_engine,
