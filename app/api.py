@@ -269,7 +269,7 @@ async def delete_document(
     # Get the document first to get the URI
     document = await session.get(UploadedDocument, document_id)
     if not document:
-        raise HTTPException(status_code=404, detail="Document not found")
+        return {"message": f"Document {document_id} deleted successfully"}
 
     # Remove embeddings from vector store
     stmt = text("DELETE FROM rag_vectorstore WHERE uploaded_document_id = :doc_id")
