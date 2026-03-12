@@ -10,7 +10,7 @@ def run_ingestion_job(
     document_id: str,
     job: str,
     location: str = "us-central1",
-    project: str = os.getenv("GOOGLE_CLOUD_PROJECT", "poc-suroeste"),
+    project: str = os.getenv("GOOGLE_CLOUD_PROJECT"),
 ) -> operation.Operation:
     job_name = f"projects/{project}/locations/{location}/jobs/{job}"
 

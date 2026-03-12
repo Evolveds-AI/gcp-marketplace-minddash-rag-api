@@ -29,12 +29,12 @@ logger = logging.getLogger(__name__)
 load_dotenv()
 
 RAG_JOB = os.getenv("JOB_RAG")
-PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT", "poc-suroeste")
+PROJECT_ID = os.getenv("GOOGLE_CLOUD_PROJECT")
 # Initialize the a specific Embeddings Model version
 embeddings_model = VertexAIEmbeddings(
     model_name="gemini-embedding-001",
     dimensions=768,
-    project=PROJECT_ID,  # Aquí usamos poc-suroeste
+    project=PROJECT_ID,
     location="us-central1",
 )
 # Allowed file extensions for upload
