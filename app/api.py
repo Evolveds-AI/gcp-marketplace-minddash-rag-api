@@ -156,7 +156,7 @@ async def upload_file(
     await session.commit()
     await session.refresh(document)
 
-    run_ingestion_job(document.id, RAG_JOB)
+    run_ingestion_job(document.id, RAG_JOB, project=PROJECT_ID)
 
     print("Ingrestion job triggered for document ID:", document.id)
     return document

@@ -1,3 +1,5 @@
+import os
+
 from google.api_core import operation
 from google.cloud import run_v2
 
@@ -8,7 +10,7 @@ def run_ingestion_job(
     document_id: str,
     job: str,
     location: str = "us-central1",
-    project: str = "poc-suroeste",
+    project: str = os.getenv("GOOGLE_CLOUD_PROJECT", "poc-suroeste"),
 ) -> operation.Operation:
     job_name = f"projects/{project}/locations/{location}/jobs/{job}"
 
